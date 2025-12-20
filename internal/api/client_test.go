@@ -13,7 +13,7 @@ import (
 func TestFetchData(t *testing.T) {
 	// Mock API response
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		data := map[string]any{"id": 1, "name": "John", "subData": map[string]string{"subkey1": "subvalue1"}}
+		data := map[string]any{"id": 1, "name": "John", "extraData": map[string]string{"location": "Thailand"}}
 		json.NewEncoder(w).Encode(data)
 	}))
 	defer ts.Close()
@@ -29,8 +29,8 @@ func TestFetchData(t *testing.T) {
 	assert.Equal(t, "John", data["name"])
 	assert.Equal(t, 1.0, data["id"])
 	// Check sub-level
-	subData := data["subData"].(map[string]interface{})
-	assert.Equal(t, "subvalue1", subData["subkey1"])
+	subData := data["extraData"].(map[string]interface{})
+	assert.Equal(t, "Thailand", subData["location"])
 }
 
 func TestFetchDataError(t *testing.T) {
