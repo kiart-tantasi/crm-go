@@ -30,8 +30,13 @@ func (c *Client) FetchData(url string) (map[string]any, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body to bytes: %w", err)
+	}
+
 	var data map[string]any
-	if err = json.Unmarshal(resp.Body, &data); err != nil {
+	if err = json.Unmarshal(bytes, &data); err != nil {
 		return nil, fmt.Errorf("failed to decode JSON: %w", err)
 	}
 	return data, nil
