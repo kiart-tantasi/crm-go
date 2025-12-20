@@ -1,0 +1,34 @@
+version: '5'
+
+services:
+  # db:
+  #   image: mysql:8.0
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=changeme
+  #   healthcheck:
+  #     test: mysqladmin --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD ping
+  #     start_period: 5s
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 10
+  #   restart: always
+  #   networks:
+  #     - default
+  #   ports:
+  #     - 3306:3306
+
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    restart: always
+    ports:
+      - '4999:80'
+      - '25:25'
+      - '143:143'
+    volumes:
+        - smtp4dev-data-go-crm:/smtp4dev
+    environment:
+      - ServerOptions__Urls=http://*:80
+      - ServerOptions__HostName=smtp4dev
+
+volumes:
+  smtp4dev-data-go-crm:
