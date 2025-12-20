@@ -31,9 +31,8 @@ func (c *Client) FetchData(url string) (map[string]any, error) {
 	}
 
 	var data map[string]any
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+	if err = json.Unmarshal(resp.Body, &data); err != nil {
 		return nil, fmt.Errorf("failed to decode JSON: %w", err)
 	}
-
 	return data, nil
 }
