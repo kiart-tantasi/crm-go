@@ -4,10 +4,16 @@ CRM platform written in Go
 
 # How to run
 
-## Mock SMTP server
+## Start docker-compose to start mysql and smtp4dev
 
 ```bash
 docker compose up -d
+```
+
+## Database migration
+
+```bash
+goose -dir migrations mysql "admin:admin@tcp(localhost:3309)/crm-go" up
 ```
 
 Access at http://localhost:4999
