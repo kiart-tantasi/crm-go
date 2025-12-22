@@ -8,7 +8,7 @@ import (
 
 	"github.com/kiart-tantasi/crm-go/internal/api"
 	"github.com/kiart-tantasi/crm-go/internal/email"
-	"github.com/kiart-tantasi/crm-go/internal/template"
+	"github.com/kiart-tantasi/crm-go/internal/templates"
 )
 
 func main() {
@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// 2. Render template
-	renderedBody, err := template.Render(*bodyTemplate, data)
+	renderedBody, err := templates.Render(*bodyTemplate, data)
 	if err != nil {
 		log.Fatalf("Error rendering template: %v", err)
 	}

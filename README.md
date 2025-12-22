@@ -24,6 +24,12 @@ Access at http://localhost:4999
 go run cmd/mockapi/main.go
 ```
 
+## API Server
+
+```bash
+go run cmd/api/main.go
+```
+
 ## Send email
 
 ### Send email
