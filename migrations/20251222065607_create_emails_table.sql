@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE templates (
+CREATE TABLE emails (
     id INT AUTO_INCREMENT PRIMARY KEY,
     alias VARCHAR(255) NOT NULL,
     template TEXT NOT NULL,
@@ -15,5 +15,5 @@ CREATE TABLE templates (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS templates;
+DROP TABLE IF EXISTS emails;
 -- +goose StatementEnd
