@@ -9,16 +9,17 @@ import (
 	"github.com/kiart-tantasi/crm-go/internal/health"
 )
 
-func SetupHandlers(r *gin.Engine) {
+func SetupHandlers(r *gin.Engine, emailService *emails.Service) {
 	// Health
 	r.GET("/healthz", health.HealthHandler)
 
 	// Emails
+	emailHandler := emails.NewEmailHandler(emailService)
 	emailsGroup := r.Group("/emails")
 	{
-		emailsGroup.GET("", emails.ListHandler)
-		emailsGroup.GET("/:id", emails.GetHandler)
-		emailsGroup.POST("", emails.CreateHandler)
+		emailsGroup.GET("", emailHandler.ListHandler)
+		emailsGroup.GET("/:id", emailHandler.GetHandler)
+		emailsGroup.POST("", emailHandler.PostHandler)
 	}
 }
 

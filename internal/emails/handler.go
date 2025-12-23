@@ -8,39 +8,53 @@ import (
 
 // TODO: implement these handlers
 
-// ListHandlers handles GET /emails
-func ListHandler(c *gin.Context) {
-	c.JSON(http.StatusOK, []gin.H{
-		{
-			"id":      1,
-			"name":    "Welcome Email",
-			"subject": "Welcome to our platform!",
-		},
-	})
+type EmailHandler struct {
+	service *Service
 }
 
-// GetHandler handles GET /emails/:id
-func GetHandler(c *gin.Context) {
-	id := c.Param("id")
+func NewEmailHandler(service *Service) *EmailHandler {
+	return &EmailHandler{service: service}
+}
 
+// GET /emails
+func (h *EmailHandler) ListHandler(c *gin.Context) {
+	list, err := h.service.List(c.Request.Context(), c.Query("limit"), c.Query("offset"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"id":      id,
-		"name":    "Dummy Email",
-		"subject": "Dummy Subject",
-		"body":    "Hello World",
+		"message": "Emails listed successfully",
+		"data":    map[string][]Email{"emails": list},
 	})
 }
 
-// CreateHandler handles POST /emails
-func CreateHandler(c *gin.Context) {
+// GET /emails/:id
+func (h *EmailHandler) GetHandler(c *gin.Context) {
+	// Validate param id
+	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+		return
+	}
+	h.service.GetByID(c.Request.Context(), c.Param("id"))
+}
+
+// POST /emails
+func (h *EmailHandler) PostHandler(c *gin.Context) {
+	// Bind request body with email struct
 	var input Email
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "Email created successfully",
-		"email":   input,
+	// Service
+	if err := h.service.Upsert(c.Request.Context(), &input); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// Respond
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Email upserted successfully",
 	})
 }
