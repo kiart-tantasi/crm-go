@@ -1,4 +1,4 @@
-package templates
+package emails
 
 import (
 	"testing"
@@ -8,18 +8,18 @@ import (
 )
 
 func TestRender(t *testing.T) {
-	tpl := "Hello {{.name}}!"
+	emailBody := "Hello {{.name}}!"
 	data := map[string]any{"name": "World"}
-	got, err := Render(tpl, data)
+	got, err := Render(emailBody, data)
 
 	require.NoError(t, err)
 	assert.Equal(t, "Hello World!", got)
 }
 
-func TestRenderInvalidTemplate(t *testing.T) {
-	tpl := "Hello {{.name"
+func TestRenderInvalidEmail(t *testing.T) {
+	emailBody := "Hello {{.name"
 	data := map[string]any{"name": "World"}
-	_, err := Render(tpl, data)
+	_, err := Render(emailBody, data)
 
 	assert.Error(t, err)
 }

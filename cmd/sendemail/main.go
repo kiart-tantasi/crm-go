@@ -8,7 +8,7 @@ import (
 
 	"github.com/kiart-tantasi/crm-go/internal/api"
 	"github.com/kiart-tantasi/crm-go/internal/email"
-	"github.com/kiart-tantasi/crm-go/internal/templates"
+	"github.com/kiart-tantasi/crm-go/internal/emails"
 )
 
 func main() {
@@ -25,8 +25,8 @@ func main() {
 	toAddr := flag.String("to-addr", "", "Recipient email address")
 	// Payload
 	subject := flag.String("subject", "", "Email subject")
-	bodyTemplate := flag.String("body-template", "", "Email body template (Go template)")
-	apiURL := flag.String("api-url", "", "API URL to fetch data for template")
+	bodyEmail := flag.String("body-email", "", "Email body (Go email)")
+	apiURL := flag.String("api-url", "", "API URL to fetch data for email")
 	// Others
 	debugMode := flag.Bool("debug", false, "Enable debug mode")
 	// Parse flags from arguments
@@ -36,8 +36,8 @@ func main() {
 	// - from email address
 	// - to email address
 	// - subject
-	// - body template
-	if *fromAddr == "" || *toAddr == "" || *subject == "" || *bodyTemplate == "" {
+	// - body email
+	if *fromAddr == "" || *toAddr == "" || *subject == "" || *bodyEmail == "" {
 		fmt.Println("Usage of send-email:")
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -54,10 +54,10 @@ func main() {
 		}
 	}
 
-	// 2. Render template
-	renderedBody, err := templates.Render(*bodyTemplate, data)
+	// 2. Render email
+	renderedBody, err := emails.Render(*bodyEmail, data)
 	if err != nil {
-		log.Fatalf("Error rendering template: %v", err)
+		log.Fatalf("Error rendering email: %v", err)
 	}
 	if *debugMode {
 		log.Printf("[DEBUG] Rendered body:\n%s", renderedBody)

@@ -1,8 +1,8 @@
-package templates
+package emails
 
 import "time"
 
-type Template struct {
+type Email struct {
 	ID           int       `json:"id"`
 	Alias        string    `json:"alias" binding:"required"`
 	Content      string    `json:"template" binding:"required"`

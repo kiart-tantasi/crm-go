@@ -5,20 +5,20 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/kiart-tantasi/crm-go/internal/emails"
 	"github.com/kiart-tantasi/crm-go/internal/health"
-	"github.com/kiart-tantasi/crm-go/internal/templates"
 )
 
 func SetupHandlers(r *gin.Engine) {
 	// Health
 	r.GET("/healthz", health.HealthHandler)
 
-	// Templates
-	templatesGroup := r.Group("/templates")
+	// Emails
+	emailsGroup := r.Group("/emails")
 	{
-		templatesGroup.GET("", templates.ListHandler)
-		templatesGroup.GET("/:id", templates.GetHandler)
-		templatesGroup.POST("", templates.PostHandlers)
+		emailsGroup.GET("", emails.ListHandler)
+		emailsGroup.GET("/:id", emails.GetHandler)
+		emailsGroup.POST("", emails.CreateHandler)
 	}
 }
 
