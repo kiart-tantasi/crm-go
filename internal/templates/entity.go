@@ -4,9 +4,10 @@ import "time"
 
 type Template struct {
 	ID           int       `json:"id"`
-	Name         string    `json:"name" binding:"required"`
-	Subject      string    `json:"subject" binding:"required"`
-	Body         string    `json:"body" binding:"required"`
+	Alias        string    `json:"alias" binding:"required"`
+	Content      string    `json:"template" binding:"required"`
 	DateAdded    time.Time `json:"date_added"`
+	AddedBy      int       `json:"added_by"`
 	DateModified time.Time `json:"date_modified"`
+	ModifiedBy   int       `json:"modified_by"`
 }

@@ -18,7 +18,7 @@ func SetupHandlers(r *gin.Engine) {
 	{
 		templatesGroup.GET("", templates.ListHandler)
 		templatesGroup.GET("/:id", templates.GetHandler)
-		templatesGroup.POST("", templates.CreateHandler)
+		templatesGroup.POST("", templates.PostHandlers)
 	}
 }
 
