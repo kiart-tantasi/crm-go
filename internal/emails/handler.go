@@ -6,8 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: implement these handlers
-
 type EmailHandler struct {
 	service *Service
 }
@@ -31,7 +29,7 @@ func (h *EmailHandler) ListHandler(c *gin.Context) {
 
 // GET /emails/:id
 func (h *EmailHandler) GetHandler(c *gin.Context) {
-	// Validate param id
+	// Validate param
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
@@ -42,18 +40,17 @@ func (h *EmailHandler) GetHandler(c *gin.Context) {
 
 // POST /emails
 func (h *EmailHandler) PostHandler(c *gin.Context) {
-	// Bind request body with email struct
+	// Validate request body
 	var input Email
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Service
+
 	if err := h.service.Upsert(c.Request.Context(), &input); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	// Respond
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Email upserted successfully",
 	})
