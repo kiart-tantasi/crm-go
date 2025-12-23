@@ -1,4 +1,4 @@
-package middleware
+package middlewares
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MinDelay(minDuration time.Duration) gin.HandlerFunc {
+func minDelay(minDuration time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()

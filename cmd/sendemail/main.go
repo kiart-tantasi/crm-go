@@ -48,7 +48,7 @@ func main() {
 	if *apiURL != "" {
 		client := api.NewClient()
 		var err error
-		data, err = client.FetchData(*apiURL)
+		data, err = client.FetchDataAndMap(*apiURL)
 		if err != nil {
 			log.Fatalf("Error fetching data: %v", err)
 		}
