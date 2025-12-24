@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/kiart-tantasi/crm-go/internal/api"
+	"github.com/kiart-tantasi/crm-go/internal/contactlists"
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/db"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
@@ -35,12 +36,14 @@ func main() {
 	contactService := contacts.NewService(contactRepo)
 	userRepo := users.NewRepository(db)
 	userService := users.NewService(userRepo)
+	contactListRepo := contactlists.NewRepository(db)
+	contactListService := contactlists.NewService(contactListRepo)
 
 	// Middlewares
 	middlewares.SetupMiddlewares(r)
 
 	// Handlers
-	api.SetupHandlers(r, emailService, contactService, userService)
+	api.SetupHandlers(r, emailService, contactService, userService, contactListService)
 
 	// Start server
 	log.Println("Starting server on :8080")
