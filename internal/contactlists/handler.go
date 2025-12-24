@@ -2,6 +2,7 @@ package contactlists
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +17,25 @@ func NewContactListHandler(service *Service) *ContactListHandler {
 
 // GET /contact-lists
 func (h *ContactListHandler) ListHandler(c *gin.Context) {
-	list, err := h.service.List(c.Request.Context(), c.Query("limit"), c.Query("offset"))
+	limit := 100
+	if limitParam := c.Query("limit"); limitParam != "" {
+		var err error
+		limit, err = strconv.Atoi(limitParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+			return
+		}
+	}
+	offset := 0
+	if offsetParam := c.Query("offset"); offsetParam != "" {
+		var err error
+		offset, err = strconv.Atoi(offsetParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid offset"})
+			return
+		}
+	}
+	list, err := h.service.List(c.Request.Context(), limit, offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -29,9 +48,10 @@ func (h *ContactListHandler) ListHandler(c *gin.Context) {
 
 // GET /contact-lists/:id
 func (h *ContactListHandler) GetHandler(c *gin.Context) {
-	id := c.Param("id")
-	if id == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
 		return
 	}
 	cl, err := h.service.GetByID(c.Request.Context(), id)
@@ -68,13 +88,20 @@ func (h *ContactListHandler) PostHandler(c *gin.Context) {
 
 // POST /contact-lists/:id/contacts
 func (h *ContactListHandler) AddContactsHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid contact list id"})
+		return
+	}
+
 	var input BatchAddContactsRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.service.AddContacts(c.Request.Context(), c.Param("id"), input.Contacts); err != nil {
+	if err := h.service.AddContacts(c.Request.Context(), id, input.Contacts); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -85,13 +112,20 @@ func (h *ContactListHandler) AddContactsHandler(c *gin.Context) {
 
 // DELETE /contact-lists/:id/contacts
 func (h *ContactListHandler) RemoveContactsHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid contact list id"})
+		return
+	}
+
 	var input BatchRemoveContactsRequest
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := h.service.RemoveContacts(c.Request.Context(), c.Param("id"), input.ContactIDs); err != nil {
+	if err := h.service.RemoveContacts(c.Request.Context(), id, input.ContactIDs); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
