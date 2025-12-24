@@ -1,30 +1,34 @@
 package main
 
 import (
-	"database/sql"
-
-	_ "github.com/go-sql-driver/mysql"
-
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kiart-tantasi/crm-go/internal/api"
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
+	"github.com/kiart-tantasi/crm-go/internal/db"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
+	"github.com/kiart-tantasi/crm-go/internal/env"
 	"github.com/kiart-tantasi/crm-go/internal/middlewares"
 	"github.com/kiart-tantasi/crm-go/internal/users"
 )
 
 func main() {
+	// Load env files
+	if err := env.LoadEnvFiles(); err != nil {
+		log.Printf("Warning: %v", err)
+	}
+
 	// Gin engine
 	r := gin.Default()
 
-	// Shared repositories and services
-	// TODO: get db credentials from env
-	db, err := sql.Open("mysql", "admin:admin@tcp(localhost:3309)/crm-go")
+	// Init DB connection
+	db, err := db.Connect()
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
+
+	// Shared repositories and services
 	emailRepo := emails.NewRepository(db)
 	emailService := emails.NewService(emailRepo)
 	contactRepo := contacts.NewRepository(db)
