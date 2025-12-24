@@ -1,4 +1,4 @@
-package emails
+package contacts
 
 import (
 	"net/http"
@@ -6,54 +6,52 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type EmailHandler struct {
+type ContactHandler struct {
 	service *Service
 }
 
-func NewEmailHandler(service *Service) *EmailHandler {
-	return &EmailHandler{service: service}
+func NewContactHandler(service *Service) *ContactHandler {
+	return &ContactHandler{service: service}
 }
 
-// GET /emails
-func (h *EmailHandler) ListHandler(c *gin.Context) {
+// GET /contacts
+func (h *ContactHandler) ListHandler(c *gin.Context) {
 	list, err := h.service.List(c.Request.Context(), c.Query("limit"), c.Query("offset"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Emails listed successfully",
-		"data":    map[string][]Email{"emails": list},
+		"message": "Contacts listed successfully",
+		"data":    map[string][]Contact{"contacts": list},
 	})
 }
 
-// GET /emails/:id
-func (h *EmailHandler) GetHandler(c *gin.Context) {
-	// Validate param
+// GET /contacts/:id
+func (h *ContactHandler) GetHandler(c *gin.Context) {
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "id is required"})
 		return
 	}
-	email, err := h.service.GetByID(c.Request.Context(), id)
+	contact, err := h.service.GetByID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if email == nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "email not found"})
+	if contact == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "contact not found"})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Email retrieved successfully",
-		"data":    email,
+		"message": "Contact retrieved successfully",
+		"data":    contact,
 	})
 }
 
-// POST /emails
-func (h *EmailHandler) PostHandler(c *gin.Context) {
-	// Validate request body
-	var input Email
+// POST /contacts
+func (h *ContactHandler) PostHandler(c *gin.Context) {
+	var input Contact
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -64,6 +62,6 @@ func (h *EmailHandler) PostHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Email upserted successfully",
+		"message": "Contact upserted successfully",
 	})
 }

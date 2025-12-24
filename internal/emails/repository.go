@@ -50,7 +50,7 @@ func (r *Repository) GetByID(ctx context.Context, id int) (*Email, error) {
 
 func (r *Repository) List(ctx context.Context, limit int, offset int) ([]Email, error) {
 	query := `SELECT id, alias, template, added_by, modified_by
-	          FROM emails LIMIT ? OFFSET ?`
+	          FROM emails ORDER BY id ASC LIMIT ? OFFSET ?`
 	rows, err := r.db.QueryContext(ctx, query, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list emails: %w", err)
