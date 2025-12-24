@@ -3,13 +3,13 @@ package contactlists
 type ContactList struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name" binding:"required"`
-	AddedBy    int    `json:"added_by" binding:"required"`
-	ModifiedBy int    `json:"modified_by" binding:"required"`
+	AddedBy    int    `json:"addedBy" binding:"required"`
+	ModifiedBy int    `json:"modifiedBy" binding:"required"`
 }
 
 type AddContactItem struct {
-	ContactID int `json:"contact_id" binding:"required"`
-	AddedBy   int `json:"added_by" binding:"required"`
+	ContactID int `json:"contactId" binding:"required"`
+	AddedBy   int `json:"addedBy" binding:"required"`
 }
 
 type BatchAddContactsRequest struct {
@@ -17,5 +17,5 @@ type BatchAddContactsRequest struct {
 }
 
 type BatchRemoveContactsRequest struct {
-	ContactIDs []int `json:"contact_ids" binding:"required"`
+	ContactIDs []int `json:"contactIds" binding:"required"`
 }
