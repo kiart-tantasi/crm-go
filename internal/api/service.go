@@ -8,9 +8,10 @@ import (
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
 	"github.com/kiart-tantasi/crm-go/internal/health"
+	"github.com/kiart-tantasi/crm-go/internal/users"
 )
 
-func SetupHandlers(r *gin.Engine, emailService *emails.Service, contactService *contacts.Service) {
+func SetupHandlers(r *gin.Engine, emailService *emails.Service, contactService *contacts.Service, userService *users.Service) {
 	// Health
 	r.GET("/healthz", health.HealthHandler)
 
@@ -30,6 +31,15 @@ func SetupHandlers(r *gin.Engine, emailService *emails.Service, contactService *
 		contactsGroup.GET("", contactHandler.ListHandler)
 		contactsGroup.GET("/:id", contactHandler.GetHandler)
 		contactsGroup.POST("", contactHandler.PostHandler)
+	}
+
+	// Users
+	userHandler := users.NewUserHandler(userService)
+	usersGroup := r.Group("/users")
+	{
+		usersGroup.GET("", userHandler.ListHandler)
+		usersGroup.GET("/:id", userHandler.GetHandler)
+		usersGroup.POST("", userHandler.PostHandler)
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
 	"github.com/kiart-tantasi/crm-go/internal/middlewares"
+	"github.com/kiart-tantasi/crm-go/internal/users"
 )
 
 func main() {
@@ -28,12 +29,14 @@ func main() {
 	emailService := emails.NewService(emailRepo)
 	contactRepo := contacts.NewRepository(db)
 	contactService := contacts.NewService(contactRepo)
+	userRepo := users.NewRepository(db)
+	userService := users.NewService(userRepo)
 
 	// Middlewares
 	middlewares.SetupMiddlewares(r)
 
 	// Handlers
-	api.SetupHandlers(r, emailService, contactService)
+	api.SetupHandlers(r, emailService, contactService, userService)
 
 	// Start server
 	log.Println("Starting server on :8080")
