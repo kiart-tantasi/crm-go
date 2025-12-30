@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 type Repository struct {
@@ -69,4 +70,50 @@ func (r *Repository) List(ctx context.Context, limit int, offset int) ([]Email, 
 		emails = append(emails, e)
 	}
 	return emails, nil
+}
+func (r *Repository) AddContactLists(ctx context.Context, emailID int, contactListIDs []int, addedBy int) error {
+	if len(contactListIDs) == 0 {
+		return nil
+	}
+
+	// Handle dynamic amount of contact lists
+	queryValues := make([]string, 0, len(contactListIDs))
+	queryArguments := make([]interface{}, 0, len(contactListIDs)*3)
+	for _, contactListID := range contactListIDs {
+		queryValues = append(queryValues, "(?, ?, ?)")
+		queryArguments = append(queryArguments, emailID, contactListID, addedBy)
+	}
+	query := fmt.Sprintf("INSERT INTO email_contact_lists (email_id, contact_list_id, added_by) VALUES %s",
+		strings.Join(queryValues, ","))
+
+	_, err := r.db.ExecContext(ctx, query, queryArguments...)
+	if err != nil {
+		return fmt.Errorf("failed to add email contact lists: %w", err)
+	}
+	return nil
+}
+
+func (r *Repository) RemoveContactLists(ctx context.Context, emailID int, contactListIDs []int) error {
+	if len(contactListIDs) == 0 {
+		return nil
+	}
+
+	// Handle dynamic amount of contact list IDs
+	queryPlaceholders := make([]string, len(contactListIDs))
+	queryArguments := make([]interface{}, len(contactListIDs)+1)
+	queryArguments[0] = emailID
+	for i, id := range contactListIDs {
+		queryPlaceholders[i] = "?"
+		queryArguments[i+1] = id
+	}
+
+	// Execute
+	query := fmt.Sprintf("DELETE FROM email_contact_lists WHERE email_id = ? AND contact_list_id IN (%s)",
+		strings.Join(queryPlaceholders, ","))
+
+	_, err := r.db.ExecContext(ctx, query, queryArguments...)
+	if err != nil {
+		return fmt.Errorf("failed to remove email contact lists: %w", err)
+	}
+	return nil
 }

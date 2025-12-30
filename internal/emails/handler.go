@@ -87,3 +87,51 @@ func (h *EmailHandler) PostHandler(c *gin.Context) {
 		"message": "Email upserted successfully",
 	})
 }
+
+// POST /emails/:id/contact-lists
+func (h *EmailHandler) AddContactListsHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email id"})
+		return
+	}
+
+	var input BatchAddContactListsRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.service.AddContactLists(c.Request.Context(), id, input.ContactListIDs, input.AddedBy); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Email contact lists added successfully",
+	})
+}
+
+// DELETE /emails/:id/contact-lists
+func (h *EmailHandler) RemoveContactListsHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email id"})
+		return
+	}
+
+	var input BatchRemoveContactListsRequest
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.service.RemoveContactLists(c.Request.Context(), id, input.ContactListIDs); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Email contact lists removed successfully",
+	})
+}

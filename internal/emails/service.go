@@ -27,6 +27,14 @@ func (s *Service) List(ctx context.Context, limit int, offset int) ([]Email, err
 	return s.repo.List(ctx, limit, offset)
 }
 
+func (s *Service) AddContactLists(ctx context.Context, emailID int, contactListIDs []int, addedBy int) error {
+	return s.repo.AddContactLists(ctx, emailID, contactListIDs, addedBy)
+}
+
+func (s *Service) RemoveContactLists(ctx context.Context, emailID int, contactListIDs []int) error {
+	return s.repo.RemoveContactLists(ctx, emailID, contactListIDs)
+}
+
 func Render(bodyEmail string, data any) (string, error) {
 	// Create email
 	tmpl, err := template.New("").Parse(bodyEmail)

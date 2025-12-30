@@ -22,6 +22,8 @@ func SetupHandlers(r *gin.Engine, emailService *emails.Service, contactService *
 	emailsGroup.GET("", emailHandler.ListHandler)
 	emailsGroup.GET("/:id", emailHandler.GetHandler)
 	emailsGroup.POST("", emailHandler.PostHandler)
+	emailsGroup.POST("/:id/contact-lists", emailHandler.AddContactListsHandler)
+	emailsGroup.DELETE("/:id/contact-lists", emailHandler.RemoveContactListsHandler)
 
 	// Contacts
 	contactHandler := contacts.NewContactHandler(contactService)
