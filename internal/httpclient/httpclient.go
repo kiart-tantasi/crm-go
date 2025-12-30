@@ -1,9 +1,8 @@
-package api
+package httpclient
 
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 )
@@ -20,7 +19,7 @@ func NewClient() *Client {
 	}
 }
 
-func (c *Client) FetchData(url string) (map[string]any, error) {
+func (c *Client) FetchDataAndMap(url string) (map[string]any, error) {
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch data: %w", err)
@@ -31,14 +30,10 @@ func (c *Client) FetchData(url string) (map[string]any, error) {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	bytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body to bytes: %w", err)
-	}
-
 	var data map[string]any
-	if err = json.Unmarshal(bytes, &data); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
 		return nil, fmt.Errorf("failed to decode JSON: %w", err)
 	}
+
 	return data, nil
 }

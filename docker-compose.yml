@@ -1,21 +1,22 @@
 version: '5'
 
 services:
-  # db:
-  #   image: mysql:8.0
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=changeme
-  #   healthcheck:
-  #     test: mysqladmin --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD ping
-  #     start_period: 5s
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 10
-  #   restart: always
-  #   networks:
-  #     - default
-  #   ports:
-  #     - 3306:3306
+  db:
+    image: mysql:8.4
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_DATABASE=crm-go
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=admin
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-padmin"]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+    ports:
+      - 3309:3306
 
   smtp4dev:
     image: rnwood/smtp4dev:v3

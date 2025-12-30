@@ -14,8 +14,8 @@ func main() {
 		data := map[string]any{
 			"id":   1,
 			"name": "John Doe",
-			"subData": map[string]any{
-				"subKey1": "subValue1",
+			"extraData": map[string]any{
+				"location": "Thailand",
 			},
 		}
 
