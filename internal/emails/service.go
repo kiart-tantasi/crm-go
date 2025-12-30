@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+
+	"github.com/kiart-tantasi/crm-go/internal/httpclient"
 )
 
 type Service struct {
@@ -35,16 +37,29 @@ func (s *Service) RemoveContactLists(ctx context.Context, emailID int, contactLi
 	return s.repo.RemoveContactLists(ctx, emailID, contactListIDs)
 }
 
-func Render(bodyEmail string, data any) (string, error) {
-	// Create email
-	tmpl, err := template.New("").Parse(bodyEmail)
+func Render(bodyEmail string) (string, error) {
+
+	// FuncMap
+	funcMap := template.FuncMap{
+		// Function to fetch api data into map
+		"fetch": func(url string) map[string]any {
+			httpclient := httpclient.NewClient()
+			data, _ := httpclient.FetchDataAndMap(url)
+			// NOTE: ignore error for now
+			// TODO: make user able to choose between making email fail on error or ignoring error
+			return data
+		},
+	}
+
+	// Create template
+	tmpl, err := template.New("").Funcs(funcMap).Parse(bodyEmail)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse email: %w", err)
 	}
 
-	// Execute email with map-data
+	// Execute and return as string
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, data); err != nil {
+	if err := tmpl.Execute(&buf, nil); err != nil {
 		return "", fmt.Errorf("failed to execute email: %w", err)
 	}
 	return buf.String(), nil

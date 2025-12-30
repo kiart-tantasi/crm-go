@@ -8,7 +8,6 @@ import (
 
 	"github.com/kiart-tantasi/crm-go/internal/email"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
-	"github.com/kiart-tantasi/crm-go/internal/httpclient"
 )
 
 func main() {
@@ -26,7 +25,6 @@ func main() {
 	// Payload
 	subject := flag.String("subject", "", "Email subject")
 	template := flag.String("template", "", "Template for email body")
-	apiURL := flag.String("api-url", "", "API URL to fetch data for email")
 	// Others
 	debugMode := flag.Bool("debug", false, "Enable debug mode")
 	// Parse flags from arguments
@@ -43,19 +41,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 1. Fetch data from API
-	data := map[string]any{}
-	if *apiURL != "" {
-		client := httpclient.NewClient()
-		var err error
-		data, err = client.FetchDataAndMap(*apiURL)
-		if err != nil {
-			log.Fatalf("Error fetching data: %v", err)
-		}
-	}
-
-	// 2. Render email
-	renderedBody, err := emails.Render(*template, data)
+	// Render email
+	renderedBody, err := emails.Render(*template)
 	if err != nil {
 		log.Fatalf("Error rendering email: %v", err)
 	}
@@ -63,7 +50,7 @@ func main() {
 		log.Printf("[DEBUG] Rendered body:\n%s", renderedBody)
 	}
 
-	// 3. Send email
+	// Send email to SMTP server
 	mailer := email.NewMailer(*smtpHost, *smtpPort, *smtpUser, *smtpPass)
 	err = mailer.Send(email.EmailParams{
 		FromName: *fromName,
