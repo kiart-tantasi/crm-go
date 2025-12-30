@@ -25,7 +25,7 @@ func main() {
 	toAddr := flag.String("to-addr", "", "Recipient email address")
 	// Payload
 	subject := flag.String("subject", "", "Email subject")
-	bodyEmail := flag.String("body-email", "", "Email body (Go email)")
+	template := flag.String("template", "", "Template for email body")
 	apiURL := flag.String("api-url", "", "API URL to fetch data for email")
 	// Others
 	debugMode := flag.Bool("debug", false, "Enable debug mode")
@@ -37,7 +37,7 @@ func main() {
 	// - to email address
 	// - subject
 	// - body email
-	if *fromAddr == "" || *toAddr == "" || *subject == "" || *bodyEmail == "" {
+	if *fromAddr == "" || *toAddr == "" || *subject == "" || *template == "" {
 		fmt.Println("Usage of send-email:")
 		flag.PrintDefaults()
 		os.Exit(1)
@@ -55,7 +55,7 @@ func main() {
 	}
 
 	// 2. Render email
-	renderedBody, err := emails.Render(*bodyEmail, data)
+	renderedBody, err := emails.Render(*template, data)
 	if err != nil {
 		log.Fatalf("Error rendering email: %v", err)
 	}
