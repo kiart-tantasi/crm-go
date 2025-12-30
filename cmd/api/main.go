@@ -4,12 +4,12 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kiart-tantasi/crm-go/internal/api"
 	"github.com/kiart-tantasi/crm-go/internal/contactlists"
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/db"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
 	"github.com/kiart-tantasi/crm-go/internal/env"
+	"github.com/kiart-tantasi/crm-go/internal/handlers"
 	"github.com/kiart-tantasi/crm-go/internal/middlewares"
 	"github.com/kiart-tantasi/crm-go/internal/users"
 )
@@ -43,7 +43,7 @@ func main() {
 	middlewares.SetupMiddlewares(r)
 
 	// Handlers
-	api.SetupHandlers(r, emailService, contactService, userService, contactListService)
+	handlers.SetupHandlers(r, emailService, contactService, userService, contactListService)
 
 	// Start server
 	log.Println("Starting server on :8080")

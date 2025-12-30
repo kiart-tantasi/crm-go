@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/kiart-tantasi/crm-go/internal/api"
 	"github.com/kiart-tantasi/crm-go/internal/email"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
+	"github.com/kiart-tantasi/crm-go/internal/httpclient"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 	// 1. Fetch data from API
 	data := map[string]any{}
 	if *apiURL != "" {
-		client := api.NewClient()
+		client := httpclient.NewClient()
 		var err error
 		data, err = client.FetchDataAndMap(*apiURL)
 		if err != nil {
