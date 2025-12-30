@@ -1,12 +1,11 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE contact_list_contacts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
     contact_list_id INT NOT NULL,
     contact_id INT NOT NULL,
     date_added DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     added_by INT NOT NULL,
-    CONSTRAINT uq_contact_list_id_contact_id UNIQUE (contact_list_id, contact_id),
+    PRIMARY KEY (contact_list_id, contact_id),
     FOREIGN KEY (contact_list_id) REFERENCES contact_lists(id) ON DELETE CASCADE,
     FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
 );
