@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE contact_list_members (
+CREATE TABLE contact_list_contacts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     contact_list_id INT NOT NULL,
     contact_id INT NOT NULL,
@@ -14,6 +14,6 @@ CREATE TABLE contact_list_members (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS contact_list_members;
+DROP TABLE IF EXISTS contact_list_contacts;
 -- +goose StatementEnd
 

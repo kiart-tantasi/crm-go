@@ -7,13 +7,9 @@ type ContactList struct {
 	ModifiedBy int    `json:"modifiedBy" binding:"required"`
 }
 
-type AddContactItem struct {
-	ContactID int `json:"contactId" binding:"required"`
-	AddedBy   int `json:"addedBy" binding:"required"`
-}
-
 type BatchAddContactsRequest struct {
-	Contacts []AddContactItem `json:"contacts" binding:"required"`
+	ContactIDs []int `json:"contactIds" binding:"required"`
+	AddedBy    int   `json:"addedBy" binding:"required"`
 }
 
 type BatchRemoveContactsRequest struct {

@@ -65,20 +65,19 @@ func (r *Repository) List(ctx context.Context, limit int, offset int) ([]Contact
 	}
 	return lists, nil
 }
-
-func (r *Repository) AddContacts(ctx context.Context, contactListID int, contacts []AddContactItem) error {
-	if len(contacts) == 0 {
+func (r *Repository) AddContacts(ctx context.Context, contactListID int, contactIDs []int, addedBy int) error {
+	if len(contactIDs) == 0 {
 		return nil
 	}
 
 	// Handle dynamic amount of contacts
-	queryValues := make([]string, 0, len(contacts))
-	queryArguments := make([]interface{}, 0, len(contacts)*3)
-	for _, c := range contacts {
+	queryValues := make([]string, 0, len(contactIDs))
+	queryArguments := make([]interface{}, 0, len(contactIDs)*3)
+	for _, contactID := range contactIDs {
 		queryValues = append(queryValues, "(?, ?, ?)")
-		queryArguments = append(queryArguments, contactListID, c.ContactID, c.AddedBy)
+		queryArguments = append(queryArguments, contactListID, contactID, addedBy)
 	}
-	query := fmt.Sprintf("INSERT INTO contact_list_members (contact_list_id, contact_id, added_by) VALUES %s ON DUPLICATE KEY UPDATE added_by = VALUES(added_by)",
+	query := fmt.Sprintf("INSERT INTO contact_list_contacts (contact_list_id, contact_id, added_by) VALUES %s",
 		strings.Join(queryValues, ","))
 
 	_, err := r.db.ExecContext(ctx, query, queryArguments...)
@@ -103,7 +102,7 @@ func (r *Repository) RemoveContacts(ctx context.Context, contactListID int, cont
 	}
 
 	// Execute
-	query := fmt.Sprintf("DELETE FROM contact_list_members WHERE contact_list_id = ? AND contact_id IN (%s)",
+	query := fmt.Sprintf("DELETE FROM contact_list_contacts WHERE contact_list_id = ? AND contact_id IN (%s)",
 		strings.Join(queryPlaceholders, ","))
 
 	_, err := r.db.ExecContext(ctx, query, queryArguments...)

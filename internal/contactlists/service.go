@@ -24,8 +24,8 @@ func (s *Service) List(ctx context.Context, limit int, offset int) ([]ContactLis
 	return s.repo.List(ctx, limit, offset)
 }
 
-func (s *Service) AddContacts(ctx context.Context, contactListID int, contacts []AddContactItem) error {
-	return s.repo.AddContacts(ctx, contactListID, contacts)
+func (s *Service) AddContacts(ctx context.Context, contactListID int, contactIDs []int, addedBy int) error {
+	return s.repo.AddContacts(ctx, contactListID, contactIDs, addedBy)
 }
 
 func (s *Service) RemoveContacts(ctx context.Context, contactListID int, contactIDs []int) error {

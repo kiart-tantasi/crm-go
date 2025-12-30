@@ -101,7 +101,7 @@ func (h *ContactListHandler) AddContactsHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.AddContacts(c.Request.Context(), id, input.Contacts); err != nil {
+	if err := h.service.AddContacts(c.Request.Context(), id, input.ContactIDs, input.AddedBy); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
