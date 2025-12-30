@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/kiart-tantasi/crm-go/internal/email"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
+	"github.com/kiart-tantasi/crm-go/internal/mailing"
 )
 
 func main() {
@@ -51,15 +51,16 @@ func main() {
 	}
 
 	// Send email to SMTP server
-	mailer := email.NewMailer(*smtpHost, *smtpPort, *smtpUser, *smtpPass)
-	err = mailer.Send(email.EmailParams{
+	mailer := mailing.NewMailer(*smtpHost, *smtpPort, *smtpUser, *smtpPass)
+	params := mailing.EmailParams{
 		FromName: *fromName,
 		FromAddr: *fromAddr,
 		ToName:   *toName,
 		ToAddr:   *toAddr,
 		Subject:  *subject,
 		Body:     renderedBody,
-	})
+	}
+	err = mailer.Send(params)
 
 	if err != nil {
 		log.Fatalf("Error sending email: %v", err)
