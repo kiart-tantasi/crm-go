@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"github.com/kiart-tantasi/crm-go/internal/contacts"
 )
 
 type Repository struct {
@@ -116,4 +118,34 @@ func (r *Repository) RemoveContactLists(ctx context.Context, emailID int, contac
 		return fmt.Errorf("failed to remove email contact lists: %w", err)
 	}
 	return nil
+}
+
+func (r *Repository) GetContactsByEmailID(ctx context.Context, emailID int) ([]contacts.Contact, error) {
+	query := `
+		SELECT c.id, c.firstname, c.lastname, c.email, c.is_published, c.added_by, c.modified_by
+		FROM contacts c
+		JOIN contact_list_contacts clc ON c.id = clc.contact_id
+		JOIN email_contact_lists ecl ON clc.contact_list_id = ecl.contact_list_id
+		WHERE ecl.email_id = ?
+	`
+	rows, err := r.db.QueryContext(ctx, query, emailID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get contacts for email: %w", err)
+	}
+	defer rows.Close()
+
+	var result []contacts.Contact
+	for rows.Next() {
+		var c contacts.Contact
+		var isPublished bool
+		err := rows.Scan(
+			&c.ID, &c.Firstname, &c.Lastname, &c.Email, &isPublished, &c.AddedBy, &c.ModifiedBy,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan contact: %w", err)
+		}
+		c.IsPublished = &isPublished
+		result = append(result, c)
+	}
+	return result, nil
 }

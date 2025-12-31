@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 
+	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/httpclient"
 )
 
@@ -37,16 +38,52 @@ func (s *Service) RemoveContactLists(ctx context.Context, emailID int, contactLi
 	return s.repo.RemoveContactLists(ctx, emailID, contactListIDs)
 }
 
-func Render(bodyEmail string) (string, error) {
+func (s *Service) Send(ctx context.Context, id int) error {
+	// Fetch email
+	email, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("failed to get email: %w", err)
+	}
+	if email == nil {
+		return fmt.Errorf("email not found")
+	}
 
+	// Fetch contacts
+	contacts, err := s.repo.GetContactsByEmailID(ctx, id)
+	if err != nil {
+		return fmt.Errorf("failed to get contacts: %w", err)
+	}
+
+	// Render and send email
+	for _, contact := range contacts {
+		_, err := RenderWithContact(email.Template, contact)
+		if err != nil {
+			fmt.Printf("failed to render email for %s: %v\n", contact.Email, err)
+			continue
+		}
+		fmt.Printf("TODO: implement function to send email to smtp server (%s)\n", contact.Email)
+	}
+	return nil
+}
+
+func Render(bodyEmail string) (string, error) {
+	return render(bodyEmail, nil)
+}
+
+func RenderWithContact(bodyEmail string, contact contacts.Contact) (string, error) {
+	data := map[string]any{
+		"contact": contact,
+	}
+	return render(bodyEmail, data)
+}
+
+func render(bodyEmail string, data any) (string, error) {
 	// FuncMap
 	funcMap := template.FuncMap{
-		// Function to fetch api data into map
 		"fetch": func(url string) map[string]any {
 			httpclient := httpclient.NewClient()
-			data, _ := httpclient.FetchDataAndMap(url)
-			// NOTE: ignore error for now
 			// TODO: make user able to choose between making email fail on error or ignoring error
+			data, _ := httpclient.FetchDataAndMap(url)
 			return data
 		},
 	}
@@ -59,7 +96,7 @@ func Render(bodyEmail string) (string, error) {
 
 	// Execute and return as string
 	var buf bytes.Buffer
-	if err := tmpl.Execute(&buf, nil); err != nil {
+	if err := tmpl.Execute(&buf, data); err != nil {
 		return "", fmt.Errorf("failed to execute email: %w", err)
 	}
 	return buf.String(), nil
