@@ -4,6 +4,7 @@ CRM platform written in Go
 
 # How to run
 
+
 ## Start docker-compose to start mysql and smtp4dev
 
 ```bash
