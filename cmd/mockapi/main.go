@@ -13,7 +13,7 @@ func main() {
 
 		data := map[string]any{
 			"id":   1,
-			"name": "John Doe",
+			"name": "Somchai Prasert",
 			"extraData": map[string]any{
 				"location": "Thailand",
 			},
@@ -27,7 +27,7 @@ func main() {
 		}
 	})
 
-	port := 8080
+	port := 8090
 	fmt.Printf("Mock API server starting on http://localhost:%d\n", port)
 	fmt.Println("Press Ctrl+C to stop")
 

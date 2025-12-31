@@ -35,7 +35,7 @@ go run cmd/api/main.go
 ### Send email
 
 ```bash
-go run cmd/sendemail/main.go -debug=true -smtp-host=localhost -smtp-port=25 -from-addr=from@test.com -to-addr=to@test.com -subject='Subject test' -template='{{ $data := fetch "http://localhost:8080/" }}
+go run cmd/sendemail/main.go -debug=true -smtp-host=localhost -smtp-port=25 -from-addr=from@test.com -to-addr=to@test.com -subject='Subject test' -template='{{ $data := fetch "http://localhost:8090/" }}
 <div>
     <h1>Hello {{ $data.name }} !</h1>
     <hr/>

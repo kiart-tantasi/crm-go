@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"html/template"
+	"log"
 
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/httpclient"
@@ -56,12 +57,15 @@ func (s *Service) Send(ctx context.Context, id int) error {
 
 	// Render and send email
 	for _, contact := range contacts {
-		_, err := RenderWithContact(email.Template, contact)
+		rendered, err := RenderWithContact(email.Template, contact)
 		if err != nil {
 			fmt.Printf("failed to render email for %s: %v\n", contact.Email, err)
 			continue
 		}
-		fmt.Printf("TODO: implement function to send email to smtp server (%s)\n", contact.Email)
+		// debug
+		log.Printf("Rendered %s", rendered)
+		log.Printf("TODO: implement function to send email to smtp server (%s)\n", contact.Email)
+		// end of debug
 	}
 	return nil
 }
