@@ -135,3 +135,22 @@ func (h *EmailHandler) RemoveContactListsHandler(c *gin.Context) {
 		"message": "Email contact lists removed successfully",
 	})
 }
+
+// POST /emails/:id/send
+func (h *EmailHandler) SendHandler(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid email id"})
+		return
+	}
+
+	if err := h.service.Send(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Email sent process initiated",
+	})
+}
