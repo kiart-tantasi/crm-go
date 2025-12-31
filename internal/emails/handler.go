@@ -137,6 +137,8 @@ func (h *EmailHandler) RemoveContactListsHandler(c *gin.Context) {
 }
 
 // POST /emails/:id/send
+// TODO: add limit param with default of 1000
+// TODO: add order by contact id and min-max to prevent issues caused by replication lag
 func (h *EmailHandler) SendHandler(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
