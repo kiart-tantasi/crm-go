@@ -13,6 +13,7 @@ func NewService(repo *Repository) *Service {
 }
 
 func (s *Service) Upsert(ctx context.Context, u *User) error {
+	// TODO: hash password
 	return s.repo.Upsert(ctx, u)
 }
 
