@@ -9,6 +9,7 @@ import (
 
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/httpclient"
+	"github.com/kiart-tantasi/crm-go/internal/mailing"
 )
 
 type Service struct {
@@ -55,6 +56,8 @@ func (s *Service) Send(ctx context.Context, id int) error {
 		return fmt.Errorf("failed to get contacts: %w", err)
 	}
 
+	mailer := mailing.NewMailer("localhost", 25, "", "")
+
 	// Render and send email
 	for _, contact := range contacts {
 		rendered, err := RenderWithContact(email.Template, contact)
@@ -62,10 +65,30 @@ func (s *Service) Send(ctx context.Context, id int) error {
 			fmt.Printf("failed to render email for %s: %v\n", contact.Email, err)
 			continue
 		}
-		// debug
+
+		// DEBUG
+		// TODO: remove hardcoded fields
+		// TODO: add subject column to emails
+		// TODO: add from_name and from_email column to emails
+		// TODO: add from_name and from_email to global config table
+		// TODO: create smtp pool to send emails
+		// TODO: return response without waiting for emails to be sent
+		params := mailing.EmailParams{
+			FromName: "from",
+			FromAddr: "from@test.com",
+			ToName:   fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname),
+			ToAddr:   contact.Email,
+			Subject:  "TEST SUBJECT",
+			Body:     rendered,
+		}
+		err = mailer.Send(params)
+		if err != nil {
+			log.Fatalf("Error sending email: %v", err)
+		}
+
 		log.Printf("Rendered %s", rendered)
 		log.Printf("TODO: implement function to send email to smtp server (%s)\n", contact.Email)
-		// end of debug
+		// END OF DEBUG
 	}
 	return nil
 }
