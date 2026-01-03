@@ -4,7 +4,7 @@ in-progress
 
 # About
 
-CRM platform written in Go
+CRM platform written in Go. This repo contains REST-API server and there will be CLI-client and web-client soon.
 
 # How to run
 
