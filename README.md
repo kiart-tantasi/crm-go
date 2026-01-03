@@ -1,3 +1,7 @@
+# Status
+
+in-progress
+
 # About
 
 CRM platform written in Go
