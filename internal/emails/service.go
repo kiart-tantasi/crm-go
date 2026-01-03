@@ -9,7 +9,7 @@ import (
 
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/httpclient"
-	"github.com/kiart-tantasi/crm-go/internal/mailing"
+	"github.com/kiart-tantasi/crm-go/internal/smtppool"
 )
 
 type Service struct {
@@ -56,39 +56,24 @@ func (s *Service) Send(ctx context.Context, id int) error {
 		return fmt.Errorf("failed to get contacts: %w", err)
 	}
 
-	mailer := mailing.NewMailer("localhost", 25, "", "")
+	// Init new smtp pool for each request
+	// TODO: experiment new smtp pool on every request vs singleton
+	pool, err := smtppool.New()
+	if err != nil {
+		return fmt.Errorf("failed to create smtp pool: %w", err)
+	}
 
 	// Render and send email
 	for _, contact := range contacts {
 		rendered, err := RenderWithContact(email.Template, contact)
 		if err != nil {
-			fmt.Printf("failed to render email for %s: %v\n", contact.Email, err)
+			log.Printf("failed to render email for %s: %v\n", contact.Email, err)
 			continue
 		}
-
-		// DEBUG
-		// TODO: remove hardcoded fields
-		// TODO: add subject column to emails
-		// TODO: add from_name and from_email column to emails
-		// TODO: add from_name and from_email to global config table
-		// TODO: create smtp pool to send emails
-		// TODO: return response without waiting for emails to be sent
-		params := mailing.EmailParams{
-			FromName: "from",
-			FromAddr: "from@test.com",
-			ToName:   fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname),
-			ToAddr:   contact.Email,
-			Subject:  "TEST SUBJECT",
-			Body:     rendered,
-		}
-		err = mailer.Send(params)
-		if err != nil {
-			log.Fatalf("Error sending email: %v", err)
-		}
-
-		log.Printf("Rendered %s", rendered)
-		log.Printf("TODO: implement function to send email to smtp server (%s)\n", contact.Email)
-		// END OF DEBUG
+		header := fmt.Sprintf("From: %s <from@test.com>\r\nTo: %s <%s>\r\nSubject: TEST SUBJECT\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n", "from", fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname), contact.Email)
+		pool.SendMail("from@test.com", []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)))
+		// TODO: remove
+		log.Printf("Rendered and queued %s", contact.Email)
 	}
 	return nil
 }
