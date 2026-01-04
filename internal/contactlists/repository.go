@@ -15,7 +15,7 @@ func NewRepository(db *sql.DB) *Repository {
 	return &Repository{db: db}
 }
 
-func (r *Repository) Insert(ctx context.Context, cl *ContactList) error {
+func (r *Repository) Upsert(ctx context.Context, cl *ContactList) error {
 	query := `INSERT INTO contact_lists (id, name, added_by, modified_by)
 	          VALUES (?, ?, ?, ?)
 	          ON DUPLICATE KEY UPDATE
