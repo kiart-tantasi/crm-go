@@ -67,14 +67,27 @@ func (s *Service) Send(ctx context.Context, id int) error {
 	// Render and send email
 	taskId := rand.Intn(100_000)
 	log.Printf("Sending email to %d contacts (task id: %d)", len(contacts), taskId)
+
+	// ==================
+	// TODO: remove after creating global config table
+	fromName := email.FromName.String
+	if !email.FromName.Valid {
+		fromName = "Support Team"
+	}
+	fromAddress := email.FromAddress.String
+	if !email.FromAddress.Valid {
+		fromAddress = "support@example.com"
+	}
+	// ==================
+
 	for _, contact := range contacts {
 		rendered, err := RenderWithContact(email.Template, contact)
 		if err != nil {
 			log.Printf("failed to render email for %s: %v\n", contact.Email, err)
 			continue
 		}
-		header := fmt.Sprintf("From: %s <from@test.com>\r\nTo: %s <%s>\r\nSubject: TEST SUBJECT\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n", "from", fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname), contact.Email)
-		pool.SendMail("from@test.com", []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)))
+		header := fmt.Sprintf("From: %s <%s>\r\nTo: %s <%s>\r\nSubject: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n", fromName, fromAddress, fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname), contact.Email, email.Subject)
+		pool.SendMail(fromAddress, []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)))
 	}
 	return nil
 }

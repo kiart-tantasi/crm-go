@@ -21,10 +21,10 @@ import (
 func main() {
 	// Env
 	trueVal := true
-	userId := -12
-	emailID := -12
-	contactListId := -12
-	prefixContactId := 300_000
+	userId := -100
+	emailID := -100
+	contactListId := -100
+	prefixContactId := 100_000
 	contactCountStr := env.GetEnv("CONTACT_COUNT", "1000")
 
 	// Cast string to int
@@ -71,11 +71,14 @@ func main() {
 
 	// Email
 	email := emails.Email{
-		ID:         emailID,
-		Alias:      "Default Email",
-		Template:   "Welcome to our service!",
-		AddedBy:    userId,
-		ModifiedBy: userId,
+		ID:          emailID,
+		Alias:       "Default Email",
+		Subject:     "Welcome to our service!",
+		FromName:    sql.NullString{String: "Support Team", Valid: true},
+		FromAddress: sql.NullString{String: "support@example.com", Valid: true},
+		Template:    "Welcome to our service!",
+		AddedBy:     userId,
+		ModifiedBy:  userId,
 	}
 	body, err := json.Marshal(email)
 	if err != nil {
