@@ -7,7 +7,7 @@ in-progress
 - CRM platform / Mailing list manager
 - Written in Go
 - Main functionalities are mainly controlled through REST-API server
-- There will clients soon (CLI/web)
+- There will be clients soon (CLI/web)
 
 # How to run
 
