@@ -12,8 +12,8 @@ func NewService(repo *Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) Insert(ctx context.Context, cl *ContactList) error {
-	return s.repo.Insert(ctx, cl)
+func (s *Service) Upsert(ctx context.Context, cl *ContactList) error {
+	return s.repo.Upsert(ctx, cl)
 }
 
 func (s *Service) GetByID(ctx context.Context, id int) (*ContactList, error) {

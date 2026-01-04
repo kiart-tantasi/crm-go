@@ -77,12 +77,12 @@ func (h *ContactListHandler) PostHandler(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.Insert(c.Request.Context(), &input); err != nil {
+	if err := h.service.Upsert(c.Request.Context(), &input); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Contact list inserted successfully",
+		"message": "Contact list upserted successfully",
 	})
 }
 

@@ -16,13 +16,16 @@ func NewRepository(db *sql.DB) *Repository {
 }
 
 func (r *Repository) Insert(ctx context.Context, cl *ContactList) error {
-	query := `INSERT INTO contact_lists (name, added_by, modified_by)
-	          VALUES (?, ?, ?)`
+	query := `INSERT INTO contact_lists (id, name, added_by, modified_by)
+	          VALUES (?, ?, ?, ?)
+	          ON DUPLICATE KEY UPDATE
+	          name = VALUES(name),
+	          modified_by = VALUES(modified_by)`
 	_, err := r.db.ExecContext(ctx, query,
-		cl.Name, cl.AddedBy, cl.ModifiedBy,
+		cl.ID, cl.Name, cl.AddedBy, cl.ModifiedBy,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to insert contact list: %w", err)
+		return fmt.Errorf("failed to upsert contact list: %w", err)
 	}
 	return nil
 }
