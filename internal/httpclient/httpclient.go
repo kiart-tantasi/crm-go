@@ -19,6 +19,10 @@ func NewClient() *Client {
 	}
 }
 
+func (c *Client) Do(req *http.Request) (*http.Response, error) {
+	return c.httpClient.Do(req)
+}
+
 func (c *Client) FetchDataAndMap(url string) (map[string]any, error) {
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
