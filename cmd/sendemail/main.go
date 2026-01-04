@@ -14,7 +14,7 @@ func main() {
 	// [Flags]
 	// SMTP
 	smtpHost := flag.String("smtp-host", "localhost", "SMTP Host")
-	smtpPort := flag.Int("smtp-port", 1025, "SMTP Port")
+	smtpPort := flag.Int("smtp-port", 25, "SMTP Port")
 	smtpUser := flag.String("smtp-user", "", "SMTP Username")
 	smtpPass := flag.String("smtp-pass", os.Getenv("SMTP_PASS"), "SMTP Password (defaults to SMTP_PASS env var)")
 	// From/To

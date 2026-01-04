@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math/rand"
 
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/httpclient"
@@ -64,6 +65,8 @@ func (s *Service) Send(ctx context.Context, id int) error {
 	}
 
 	// Render and send email
+	taskId := rand.Intn(100_000)
+	log.Printf("Sending email to %d contacts (task id: %d)", len(contacts), taskId)
 	for _, contact := range contacts {
 		rendered, err := RenderWithContact(email.Template, contact)
 		if err != nil {
@@ -72,8 +75,6 @@ func (s *Service) Send(ctx context.Context, id int) error {
 		}
 		header := fmt.Sprintf("From: %s <from@test.com>\r\nTo: %s <%s>\r\nSubject: TEST SUBJECT\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n", "from", fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname), contact.Email)
 		pool.SendMail("from@test.com", []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)))
-		// TODO: remove
-		log.Printf("Rendered and queued %s", contact.Email)
 	}
 	return nil
 }
