@@ -4,7 +4,10 @@ in-progress
 
 # About
 
-CRM platform written in Go. This repo contains REST-API server and there will be CLI-client and web-client soon.
+- CRM platform / Mailing list manager
+- Written in Go
+- Main functionalities are mainly controlled through REST-API server
+- There will clients soon (CLI/web)
 
 # How to run
 
