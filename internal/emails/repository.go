@@ -123,15 +123,17 @@ func (r *Repository) RemoveContactLists(ctx context.Context, emailID int, contac
 	return nil
 }
 
+// TODO: handle batch use case
 func (r *Repository) GetContactsByEmailID(ctx context.Context, emailID int) ([]contacts.Contact, error) {
 	query := `
-		SELECT c.id, c.firstname, c.lastname, c.email, c.is_published, c.added_by, c.modified_by
+		SELECT DISTINCT c.id, c.firstname, c.lastname, c.email, c.is_published, c.added_by, c.modified_by
 		FROM contacts c
 		JOIN contact_list_contacts clc ON c.id = clc.contact_id
 		JOIN email_contact_lists ecl ON clc.contact_list_id = ecl.contact_list_id
-		WHERE ecl.email_id = ?
+		LEFT JOIN email_sends es ON es.email_id = ? AND es.contact_id = c.id
+		WHERE ecl.email_id = ? AND es.contact_id IS NULL
 	`
-	rows, err := r.db.QueryContext(ctx, query, emailID)
+	rows, err := r.db.QueryContext(ctx, query, emailID, emailID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get contacts for email: %w", err)
 	}

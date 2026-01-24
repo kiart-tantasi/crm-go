@@ -8,6 +8,7 @@ import (
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
 	"github.com/kiart-tantasi/crm-go/internal/db"
 	"github.com/kiart-tantasi/crm-go/internal/emails"
+	"github.com/kiart-tantasi/crm-go/internal/emailsends"
 	"github.com/kiart-tantasi/crm-go/internal/env"
 	"github.com/kiart-tantasi/crm-go/internal/handlers"
 	"github.com/kiart-tantasi/crm-go/internal/middlewares"
@@ -30,8 +31,10 @@ func main() {
 	}
 
 	// Shared repositories and services
+	emailSendRepo := emailsends.NewRepository(db)
+	emailSendService := emailsends.NewService(emailSendRepo)
 	emailRepo := emails.NewRepository(db)
-	emailService := emails.NewService(emailRepo)
+	emailService := emails.NewService(emailRepo, emailSendService)
 	contactRepo := contacts.NewRepository(db)
 	contactService := contacts.NewService(contactRepo)
 	userRepo := users.NewRepository(db)

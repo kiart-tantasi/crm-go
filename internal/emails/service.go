@@ -9,16 +9,21 @@ import (
 	"math/rand"
 
 	"github.com/kiart-tantasi/crm-go/internal/contacts"
+	"github.com/kiart-tantasi/crm-go/internal/emailsends"
 	"github.com/kiart-tantasi/crm-go/internal/httpclient"
 	"github.com/kiart-tantasi/crm-go/internal/smtppool"
 )
 
 type Service struct {
-	repo *Repository
+	repo             *Repository
+	emailSendService *emailsends.Service
 }
 
-func NewService(repo *Repository) *Service {
-	return &Service{repo: repo}
+func NewService(repo *Repository, emailSendService *emailsends.Service) *Service {
+	return &Service{
+		repo:             repo,
+		emailSendService: emailSendService,
+	}
 }
 
 func (s *Service) Upsert(ctx context.Context, e *Email) error {
@@ -58,7 +63,6 @@ func (s *Service) Send(ctx context.Context, id int) error {
 	}
 
 	// Init new smtp pool for each request
-	// TODO: experiment new smtp pool on every request vs singleton
 	pool, err := smtppool.New()
 	if err != nil {
 		return fmt.Errorf("failed to create smtp pool: %w", err)
@@ -72,11 +76,11 @@ func (s *Service) Send(ctx context.Context, id int) error {
 	// TODO: remove after creating global config table
 	fromName := email.FromName.String
 	if !email.FromName.Valid {
-		fromName = "Support Team"
+		fromName = "Demo"
 	}
 	fromAddress := email.FromAddress.String
 	if !email.FromAddress.Valid {
-		fromAddress = "support@example.com"
+		fromAddress = "no-reply@petchblog.net"
 	}
 	// ==================
 
@@ -87,7 +91,15 @@ func (s *Service) Send(ctx context.Context, id int) error {
 			continue
 		}
 		header := fmt.Sprintf("From: %s <%s>\r\nTo: %s <%s>\r\nSubject: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n", fromName, fromAddress, fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname), contact.Email, email.Subject)
+
+		// Send async
 		pool.SendMail(fromAddress, []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)))
+
+		// Record sent status immediately after queuing
+		// Note: Since SendMail is async, we record it here to prevent duplicate queuing if Send is called again quickly.
+		if err := s.emailSendService.Upsert(ctx, id, contact.ID); err != nil {
+			log.Printf("failed to mark email as sent for contact %d: %v\n", contact.ID, err)
+		}
 	}
 	return nil
 }
