@@ -24,7 +24,7 @@ type mailTask struct {
 	body []byte
 }
 
-// TODO: return error when failinng to init
+// TODO: return error when init fails
 func New() (*Pool, error) {
 	host := env.GetEnv("SMTP_HOST", "localhost")
 	portStr := env.GetEnv("SMTP_PORT", "25")
@@ -66,7 +66,7 @@ func (p *Pool) SendMail(from string, to []string, body []byte) {
 	}
 }
 
-// TODO: experiment on client pool vs non client pool
+// TODO: replace default smtp.SendMail with smtppool
 func (p *Pool) worker(id int) {
 	addr := fmt.Sprintf("%s:%d", p.host, p.port)
 	var auth smtp.Auth

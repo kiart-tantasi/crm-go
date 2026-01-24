@@ -37,7 +37,11 @@ go run cmd/mockapi/main.go
 go run cmd/api/main.go
 ```
 
-## Send email
+## Test with mock data
+
+See `cmd/createmock/main.go`
+
+## Send email (deprecated)
 
 ### Send email
 

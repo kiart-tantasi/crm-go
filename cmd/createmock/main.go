@@ -18,6 +18,15 @@ import (
 	"github.com/kiart-tantasi/crm-go/internal/users"
 )
 
+/*
+# Test with mock data
+
+- go run cmd/api/main.go
+
+- go run cmd/createmock/main.go
+
+- Start sending email by `curl -X POST http://localhost:8080/emails/{email_id}/send` (replace {email_id} with email id below)
+*/
 func main() {
 	// Env
 	trueVal := true
