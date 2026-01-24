@@ -1,7 +1,3 @@
-# Status
-
-in-progress
-
 # About
 
 - CRM platform / Mailing list manager
