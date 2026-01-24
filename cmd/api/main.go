@@ -17,8 +17,8 @@ import (
 
 func main() {
 	// Load env files
-	if err := env.LoadEnvFiles(); err != nil {
-		log.Printf("Warning: %v", err)
+	if err := env.LoadEnvFile(".env"); err != nil {
+		log.Printf("Env file warning: %v", err)
 	}
 
 	// Gin engine

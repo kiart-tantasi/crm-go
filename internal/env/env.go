@@ -7,14 +7,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// .env.local > .env
-func LoadEnvFiles() error {
-	_ = godotenv.Load(".env.local")
-
-	if err := godotenv.Load(".env"); err != nil {
-		return fmt.Errorf("failed to load .env file: %w", err)
-	}
-	return nil
+func LoadEnvFile(filename string) error {
+	return godotenv.Load(filename)
 }
 
 func GetEnv(key string, defaultValue string) string {
