@@ -24,6 +24,9 @@ import (
 - go run cmd/api/main.go
 
 - go run cmd/createmock/main.go
+  - or CONTACT_COUNT=XXX go run cmd/createmock/main.go
+
+- go run cmd/smtp-server/main.go
 
 - Start sending email by `curl -X POST http://localhost:8080/emails/{email_id}/send` (replace {email_id} with email id below)
 */

@@ -15,14 +15,14 @@ import (
 )
 
 type Service struct {
-	repo             *Repository
-	emailSendService *emailsends.Service
+	repo              *Repository
+	emailSendsService emailsends.EmailSendServiceI
 }
 
-func NewService(repo *Repository, emailSendService *emailsends.Service) *Service {
+func NewService(repo *Repository, emailSendsService emailsends.EmailSendServiceI) *Service {
 	return &Service{
-		repo:             repo,
-		emailSendService: emailSendService,
+		repo:              repo,
+		emailSendsService: emailSendsService,
 	}
 }
 
@@ -63,7 +63,7 @@ func (s *Service) Send(ctx context.Context, id int) error {
 	}
 
 	// Init new smtp pool for each request
-	pool, err := smtppool.New()
+	pool, err := smtppool.New(s.emailSendsService)
 	if err != nil {
 		return fmt.Errorf("failed to create smtp pool: %w", err)
 	}
@@ -85,6 +85,7 @@ func (s *Service) Send(ctx context.Context, id int) error {
 	// ==================
 
 	for _, contact := range contacts {
+		// TODO: use goroutines to render email templates
 		rendered, err := RenderWithContact(email.Template, contact)
 		if err != nil {
 			log.Printf("failed to render email for %s: %v\n", contact.Email, err)
@@ -92,14 +93,8 @@ func (s *Service) Send(ctx context.Context, id int) error {
 		}
 		header := fmt.Sprintf("From: %s <%s>\r\nTo: %s <%s>\r\nSubject: %s\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=\"utf-8\"\r\n\r\n", fromName, fromAddress, fmt.Sprintf("%s %s", contact.Firstname, contact.Lastname), contact.Email, email.Subject)
 
-		// Send async
-		pool.SendMail(fromAddress, []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)))
-
-		// Record sent status immediately after queuing
-		// Note: Since SendMail is async, we record it here to prevent duplicate queuing if Send is called again quickly.
-		if err := s.emailSendService.Upsert(ctx, id, contact.ID); err != nil {
-			log.Printf("failed to mark email as sent for contact %d: %v\n", contact.ID, err)
-		}
+		// Enqueue email to be sent out
+		pool.EnqueueEmail(fromAddress, []string{contact.Email}, []byte(fmt.Sprintf("%s%s", header, rendered)), id, contact.ID)
 	}
 	return nil
 }
