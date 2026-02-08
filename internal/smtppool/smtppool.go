@@ -117,10 +117,11 @@ func (p *Pool) Worker(id int) {
 		}
 
 		// Send email
+		var err error
 		sendAttempt := 0
 		for sendAttempt < p.sendAttempts {
 			sendAttempt++
-			err := p.sendEmail(client, task)
+			err = p.sendEmail(client, task)
 			if err == nil {
 				// TODO: Log in debugging mode only
 				log.Printf("[DEBUG] [SMTPPool] [Worker %d] [Send attempt %d] Email was successfully sent", id, sendAttempt)
@@ -132,11 +133,13 @@ func (p *Pool) Worker(id int) {
 		// No deadline for now
 		ctx := context.Background()
 
-		// Upsert status into table email_sends
-		// TODO: add column "status" with value "sent" or "failed"
-		// TODO: check error and upsert status accordingly
-		if err := p.emailSendService.Upsert(ctx, task.emailID, task.contactID); err != nil {
-			log.Printf("failed to upsert email sends for contact id %d: %v\n", task.contactID, err)
+		// Insert status record
+		status := "sent"
+		if err != nil {
+			status = "failed"
+		}
+		if err := p.emailSendService.Insert(ctx, task.emailID, task.contactID, status); err != nil {
+			log.Printf("Failed to insert status record for contact id %d: %v\n", task.contactID, err)
 		}
 
 		// Return client to pool

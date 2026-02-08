@@ -161,7 +161,7 @@ func main() {
 				printResponseError(contactResp, contact.Email)
 				log.Fatal("Response is not 2xx")
 			} else {
-				log.Printf("Contact created: %s , %d", contact.Email, contactResp.StatusCode)
+				log.Printf("Contact created: %s, Status code: %d", contact.Email, contactResp.StatusCode)
 				mu.Lock()
 				addedContactIds = append(addedContactIds, contactId)
 				mu.Unlock()
