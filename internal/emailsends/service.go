@@ -6,10 +6,14 @@ type Service struct {
 	repo *Repository
 }
 
-func NewService(repo *Repository) *Service {
+type EmailSendServiceI interface {
+	Insert(ctx context.Context, emailID int, contactID int, status string) error
+}
+
+func NewService(repo *Repository) EmailSendServiceI {
 	return &Service{repo: repo}
 }
 
-func (s *Service) Upsert(ctx context.Context, emailID int, contactID int) error {
-	return s.repo.Upsert(ctx, emailID, contactID)
+func (s *Service) Insert(ctx context.Context, emailID int, contactID int, status string) error {
+	return s.repo.Insert(ctx, emailID, contactID, status)
 }

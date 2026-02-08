@@ -24,6 +24,9 @@ import (
 - go run cmd/api/main.go
 
 - go run cmd/createmock/main.go
+  - or CONTACT_COUNT=XXX go run cmd/createmock/main.go
+
+- go run cmd/smtp-server/main.go
 
 - Start sending email by `curl -X POST http://localhost:8080/emails/{email_id}/send` (replace {email_id} with email id below)
 */
@@ -158,7 +161,7 @@ func main() {
 				printResponseError(contactResp, contact.Email)
 				log.Fatal("Response is not 2xx")
 			} else {
-				log.Printf("Contact created: %s , %d", contact.Email, contactResp.StatusCode)
+				log.Printf("Contact created: %s, Status code: %d", contact.Email, contactResp.StatusCode)
 				mu.Lock()
 				addedContactIds = append(addedContactIds, contactId)
 				mu.Unlock()

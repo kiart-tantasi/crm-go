@@ -8,30 +8,61 @@
 
 ## Start docker-compose to start mysql and smtp4dev
 
-```bash
+- mysql is a database for storing the application data.
+- smtp4dev is a SMTP server for testing email. You can access it at http://localhost:4999 to view sent emails.
+
+```sh
 docker compose up -d
 ```
 
 ## Database migration
 
-```bash
+### Install goose cli globally (only once)
+
+```sh
+go install github.com/pressly/goose/v3/cmd/goose@latest
+```
+
+### Start database migration
+
+```sh
 goose -dir migrations mysql "admin:admin@tcp(localhost:3309)/crm-go" up
 ```
 
-Access at http://localhost:4999
+## Environment variables for API server
 
-## Mock API
+Please set up `.env` following `.env.example`
 
-```bash
-go run cmd/mockapi/main.go
-```
+## Start API Server
 
-## API Server
+REST-API server for managing CRM platform.
 
-```bash
+```sh
 go run cmd/api/main.go
 ```
 
 ## Test with mock data
 
-See `cmd/createmock/main.go`
+For local development and testing, you can use this cmd to quickly create mock data for testing. See `cmd/createmock/main.go` for more info.
+
+```sh
+go run cmd/createmock/main.go
+```
+
+## Start Mock API (OPTIONAL)
+
+Rendering email templates can make external API calls to get data. You can use this Mock API for local development.
+
+```sh
+go run cmd/mockapi/main.go
+```
+
+## Curl
+
+These are some curl commands for testing.
+
+- Send specific email
+
+```sh
+curl -X POST --location 'http://localhost:8080/emails/-100/send'
+```
