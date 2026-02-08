@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TODO: create a dedicated endpoint to creat the first user that don't need added_by and modified_by
+// TODO: create a dedicated endpoint to create the first user that don't need added_by and modified_by
 
 type UserHandler struct {
 	service *Service
