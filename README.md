@@ -3,7 +3,6 @@
 - CRM platform / Mailing list manager
 - Written in Go
 - Main functionalities are mainly controlled through REST-API server
-- There will be clients soon (CLI/web)
 
 # How to run
 
@@ -36,22 +35,3 @@ go run cmd/api/main.go
 ## Test with mock data
 
 See `cmd/createmock/main.go`
-
-## Send email (deprecated)
-
-### Send email
-
-```bash
-go run cmd/sendemail/main.go -debug=true -smtp-host=localhost -smtp-port=25 -from-addr=from@test.com -to-addr=to@test.com -subject='Subject test' -template='{{ $data := fetch "http://localhost:8090/" }}
-<div>
-    <h1>Hello {{ $data.name }} !</h1>
-    <hr/>
-    <p>Welcome to {{ $data.extraData.location }} !</p>
-</div>'
-```
-
-### Check usage
-
-```bash
-go run cmd/sendemail/main.go -h
-```
