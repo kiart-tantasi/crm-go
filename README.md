@@ -35,7 +35,7 @@ Please set up `.env` following `.env.example`
 
 ## Start API Server
 
-This is REST-API server that you can make a REST http request to send email, manage contact; etc.
+REST-API server for managing CRM platform.
 
 ```sh
 go run cmd/api/main.go
@@ -43,7 +43,7 @@ go run cmd/api/main.go
 
 ## Test with mock data
 
-For local development and testing, you can use this cmd to quickly create mock data. See `cmd/createmock/main.go` for more info.
+For local development and testing, you can use this cmd to quickly create mock data for testing. See `cmd/createmock/main.go` for more info.
 
 ```sh
 go run cmd/createmock/main.go
